@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input:checked + div {
+    @apply border-blue-500;
+  }
+input:checked + div svg {
+    @apply block;
+}
+.toggle-addTask{
+  box-shadow: 0 3px 6px -6px rgb(54, 53, 53);
+}
