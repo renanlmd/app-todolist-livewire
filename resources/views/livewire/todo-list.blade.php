@@ -1,4 +1,6 @@
 <div class="flex justify-center w-full">
+
+    
     <div class="grid gap-4 grid-cols-2 w-full h-4/5">
         <div class="h-auto pb-2 rounded-lg  shadow-xl">
             <h2 class="text-center font-sans font-semibold text-8xl text-red-400 text-opacity-50">Todos</h2>
