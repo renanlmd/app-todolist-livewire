@@ -11,7 +11,7 @@ class TodoList extends Component
 {
     use WithPagination;
 
-    public $paginateConfig = 10;
+    public $paginateConfig = 8;
    
     public $newTask;
     
@@ -47,21 +47,20 @@ class TodoList extends Component
     {
         $this->toggleAll = false;
         
-        
-        
     }
-    public function nameTask()
+    public function nameTask($newNameTask)
     {
-        if($this->newTask){
+        
+        if($newNameTask){
 
             Todo::create([
-                'name_task' => $this->newTask,
+                'name_task' => $newNameTask,
                 'status' => Todo::PENDING,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
         }
-        $this->newTask = null;
+        $this->newNameTask = null;
     }
 
     public function updateStatusTask(Todo $todo)
@@ -98,7 +97,6 @@ class TodoList extends Component
 
     public function deleteAllCompleted($idTodos)
     {
-        
         Todo::whereIn('id', $idTodos)
             ->where('status', 'completed')
             ->delete();
