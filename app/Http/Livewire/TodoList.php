@@ -11,7 +11,7 @@ class TodoList extends Component
 {
     use WithPagination;
 
-    public $paginateConfig = 8;
+    public $paginateConfig = 3;
    
     public $newTask;
     
@@ -41,17 +41,21 @@ class TodoList extends Component
         } else{
             $this->taskStatusCompleted = false;
         }
+
         return view('livewire.todo-list', ['todo'=> $todo]);
+        
     }
+
     public function mount() 
     {
         $this->toggleAll = false;
         
     }
+
     public function nameTask($newNameTask)
     {
         
-        if($newNameTask){
+        if ($newNameTask){
 
             Todo::create([
                 'name_task' => $newNameTask,
@@ -60,7 +64,8 @@ class TodoList extends Component
                 'updated_at' => now(),
             ]);
         }
-        $this->newNameTask = null;
+        $this->dispatchBrowserEvent('clear-input');
+
     }
 
     public function updateStatusTask(Todo $todo)
@@ -75,6 +80,7 @@ class TodoList extends Component
                 'status' => Todo::PENDING
             ]);
         }
+
     }
 
     public function testToggle($todos)
@@ -87,12 +93,19 @@ class TodoList extends Component
             ->update([
                 'status' => $this->toggleAll ? 'pending' : 'completed',
             ]);
+        $this->reset();
+
     }
 
     public function deleteTask($idTask): void
     {
         Todo::where('id', $idTask)
             ->delete();
+        
+        if(Todo::all()->isEmpty()) {
+            $this->filter = 'all';
+        }
+
     }
 
     public function deleteAllCompleted($idTodos)
@@ -100,6 +113,8 @@ class TodoList extends Component
         Todo::whereIn('id', $idTodos)
             ->where('status', 'completed')
             ->delete();
+        $this->reset();
+
     }
     
 }

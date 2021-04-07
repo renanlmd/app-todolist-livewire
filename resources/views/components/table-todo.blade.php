@@ -72,23 +72,24 @@
     </div>
     
 </div>
-@if(!$todo->isEmpty())
+
+@if(!$todo->isEmpty() or \App\Models\TodoList::all()->count())
 <div class="flex items-center justify-center h-14 mt-3 p-2 bg-green-200">
    
     <div 
-    class="pr-3 font-mono text-lg text-gray-700 cursor-pointer hover:underline"
+    class="pr-3 font-mono @if($filter == 'all') font-bold @endif text-lg text-gray-700 cursor-pointer hover:underline"
     wire:click="$set('filter', 'all')"
     >
         <span>Todos</span>
     </div>
     <div 
-    class="pl-3 font-mono text-lg text-gray-700 cursor-pointer hover:underline"
+    class="pl-3 font-mono @if($filter == 'pending') font-bold @endif text-lg text-gray-700 cursor-pointer hover:underline"
     wire:click="$set('filter', 'pending')"
     >
         <span>Pendentes</span>
     </div>
     <div 
-    class="pl-3 font-mono text-lg text-gray-700 cursor-pointer hover:underline"
+    class="pl-3 font-mono @if($filter == 'completed') font-bold @endif text-lg text-gray-700 cursor-pointer hover:underline"
     wire:click="$set('filter', 'completed')"
     >
         <span>Tarefas completas</span>
@@ -96,7 +97,7 @@
     @if($taskStatusCompleted)
         <div 
         class="pl-3 font-mono text-lg text-gray-700 cursor-pointer hover:underline"
-        wire:click="deleteAllCompleted( {{json_encode(collect($todo->items())->map->id->toArray())}} )"
+        wire:click="deleteAllCompleted( {{json_encode(collect(\App\Models\TodoList::where('status', 'completed')->get())->map->id->toArray())}} )"
         >
             <span>Limpar todos concluidos</span>
         </div>
@@ -105,4 +106,11 @@
 @endif
 
 
-  
+@push('scripts')
+    <script>
+        window.addEventListener('clear-input', function() {
+            document.getElementById('nameTask').value = '';
+
+        })
+    </script>
+@endpush
