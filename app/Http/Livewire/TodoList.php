@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire;
 
-use App\Http\Controllers\TodoLists;
 use Livewire\Component;
 use App\Models\TodoList as Todo;
 use Livewire\WithPagination;
@@ -11,7 +10,7 @@ class TodoList extends Component
 {
     use WithPagination;
 
-    public $paginateConfig = 3;
+    public $paginateConfig = 8;
    
     public $newTask;
     
@@ -34,16 +33,15 @@ class TodoList extends Component
         }
         
         $verifyStatusCompleted = Todo::status('completed');
-        $verifyStatusCompleted = $verifyStatusCompleted->paginate($this->paginateConfig);
-        $verifyStatusCompleted = collect($verifyStatusCompleted->items());
-        if($verifyStatusCompleted->where('status', 'completed')->count()){
+        
+        if($verifyStatusCompleted->count()){
             $this->taskStatusCompleted = true;
         } else{
             $this->taskStatusCompleted = false;
         }
 
         return view('livewire.todo-list', ['todo'=> $todo]);
-        
+
     }
 
     public function mount() 
@@ -85,7 +83,6 @@ class TodoList extends Component
 
     public function testToggle($todos)
     {
-        
         $statusDesejado = $this->toggleAll ? 'pending' : 'completed';
 
         Todo::whereIn('id', json_decode($todos))
@@ -93,11 +90,14 @@ class TodoList extends Component
             ->update([
                 'status' => $this->toggleAll ? 'pending' : 'completed',
             ]);
-        $this->reset();
+
+        if($this->page != 1 && $this->filter != 'all'){
+            $this->gotoPage($this->page - 1);
+        }
 
     }
 
-    public function deleteTask($idTask): void
+    public function deleteTask($idTask, $countTodosPerPage): void
     {
         Todo::where('id', $idTask)
             ->delete();
@@ -105,6 +105,11 @@ class TodoList extends Component
         if(Todo::all()->isEmpty()) {
             $this->filter = 'all';
         }
+
+        if($countTodosPerPage == 1 && $this->page != 1){
+            $this->gotoPage($this->page - 1);
+        }
+
 
     }
 

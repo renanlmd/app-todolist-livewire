@@ -57,7 +57,7 @@
                     <div class="p-3 flex items-center">
                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"
                             class="w-6 h-7 text-gray-400 ease-out transform cursor-pointer hover:text-gray-700"
-                            wire:click="deleteTask({{ $todoList->id }} )">
+                            wire:click="deleteTask({{ $todoList->id }}, {{ $todo->count() }} )">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                                 d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -66,7 +66,6 @@
     
             </div>
         
-            
         @endforeach
         
     </div>
@@ -74,37 +73,64 @@
 </div>
 
 @if(!$todo->isEmpty() or \App\Models\TodoList::all()->count())
-<div class="flex items-center justify-center h-14 mt-3 p-2 bg-green-200">
-   
-    <div 
-    class="pr-3 font-mono @if($filter == 'all') font-bold @endif text-lg text-gray-700 cursor-pointer hover:underline"
-    wire:click="$set('filter', 'all')"
-    >
-        <span>Todos</span>
-    </div>
-    <div 
-    class="pl-3 font-mono @if($filter == 'pending') font-bold @endif text-lg text-gray-700 cursor-pointer hover:underline"
-    wire:click="$set('filter', 'pending')"
-    >
-        <span>Pendentes</span>
-    </div>
-    <div 
-    class="pl-3 font-mono @if($filter == 'completed') font-bold @endif text-lg text-gray-700 cursor-pointer hover:underline"
-    wire:click="$set('filter', 'completed')"
-    >
-        <span>Tarefas completas</span>
-    </div>
-    @if($taskStatusCompleted)
+    <div class="flex items-center justify-center h-14 mt-3 p-2 ">
+    
         <div 
-        class="pl-3 font-mono text-lg text-gray-700 cursor-pointer hover:underline"
-        wire:click="deleteAllCompleted( {{json_encode(collect(\App\Models\TodoList::where('status', 'completed')->get())->map->id->toArray())}} )"
+        class="pr-3 font-mono @if($filter == 'all') font-bold @endif text-lg text-gray-700 cursor-pointer hover:underline"
+        wire:click="$set('filter', 'all')"
         >
-            <span>Limpar todos concluidos</span>
+            <span>Todos</span>
         </div>
-    @endif
-</div>
+        <div 
+        class="pl-3 font-mono @if($filter == 'pending') font-bold @endif text-lg text-gray-700 cursor-pointer hover:underline"
+        wire:click="$set('filter', 'pending')"
+        >
+            <span>Pendentes</span>
+        </div>
+        <div 
+        class="pl-3 font-mono @if($filter == 'completed') font-bold @endif text-lg text-gray-700 cursor-pointer hover:underline"
+        wire:click="$set('filter', 'completed')"
+        >
+            <span>Tarefas completas</span>
+        </div>
+        @if($taskStatusCompleted)
+            <div 
+            class="pl-3 font-mono text-lg text-gray-700 cursor-pointer hover:underline"
+            wire:click="deleteAllCompleted( {{json_encode(collect(\App\Models\TodoList::where('status', 'completed')->get())->map->id->toArray())}} )"
+            >
+                <span>Limpar todos concluidos</span>
+            </div>
+        @endif
+    </div>
 @endif
 
+@if($todo->hasPages())
+    <div class="flex items-center justify-center h-14 mt-3 p-2">
+        <nav role="navigation" aria-label="Pagination Navigation" class="flex justify-between">
+            {{-- Previous Page Link --}}
+            @if ($todo->onFirstPage())
+                <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 rounded-md">
+                    {!! __('pagination.previous') !!}
+                </span>
+            @else
+                <button type="button" wire:click="previousPage" rel="prev" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 leading-5 rounded-md hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                    {!! __('pagination.previous') !!}
+                </button>
+            @endif
+    
+            {{-- Next Page Link --}}
+            @if ($todo->hasMorePages())
+                <button type="button" wire:click="nextPage" rel="next" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 leading-5 rounded-md hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                    {!! __('pagination.next') !!}
+                </button>
+            @else
+                <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 rounded-md">
+                    {!! __('pagination.next') !!}
+                </span>
+            @endif
+        </nav>
+    </div>
+@endif
 
 @push('scripts')
     <script>
