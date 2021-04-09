@@ -20,11 +20,15 @@ class TodoList extends Component
 
     public $taskStatusCompleted = false;
     
+    public $tasksPending;
+
     public function render()
     {
         $todo = $this->filter == 'all' ? Todo::orderBy('created_at', 'desc') : Todo::status($this->filter)->orderBy('created_at', 'desc');
         $todo = $todo->paginate($this->paginateConfig);
         
+        $this->tasksPending = Todo::countPending();
+
         $todoToggle = collect($todo->items());
         if ($todoToggle->where('status', 'completed')->count() == $todoToggle->count()) {
             $this->toggleAll = true;
@@ -42,6 +46,12 @@ class TodoList extends Component
 
         return view('livewire.todo-list', ['todo'=> $todo]);
 
+    }
+
+    public function setFilter($filter)
+    {
+        $this->filter = $filter;
+        $this->gotoPage(1);
     }
 
     public function mount() 

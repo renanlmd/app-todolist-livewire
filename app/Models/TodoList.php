@@ -32,4 +32,8 @@ class TodoList extends Model
         return $query->where('status', $status);
     }
     
+    public function scopeCountPending(Builder $query)
+    {
+        return $query->where('status', 'pending')->count();
+    }
 }

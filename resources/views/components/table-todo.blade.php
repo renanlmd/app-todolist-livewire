@@ -23,6 +23,7 @@
             </div>
         </div>
 </div>
+
 <div class="pt-2">
     <div class="flex flex-col-reverse divide-y divide-y-reverse divide-gray-300">
         @foreach ($todo->sortBy('created_at') as $todoList)
@@ -77,19 +78,19 @@
     
         <div 
         class="pr-3 font-mono @if($filter == 'all') font-bold @endif text-lg text-gray-700 cursor-pointer hover:underline"
-        wire:click="$set('filter', 'all')"
+        wire:click="setFilter('all')"
         >
             <span>Todos</span>
         </div>
         <div 
         class="pl-3 font-mono @if($filter == 'pending') font-bold @endif text-lg text-gray-700 cursor-pointer hover:underline"
-        wire:click="$set('filter', 'pending')"
+        wire:click="setFilter('pending')"
         >
             <span>Pendentes</span>
         </div>
         <div 
         class="pl-3 font-mono @if($filter == 'completed') font-bold @endif text-lg text-gray-700 cursor-pointer hover:underline"
-        wire:click="$set('filter', 'completed')"
+        wire:click="setFilter('completed')"
         >
             <span>Tarefas completas</span>
         </div>
@@ -103,34 +104,47 @@
         @endif
     </div>
 @endif
+<div>
+    <div class="flex flex-col-reverse divide-y divide-y-reverse divide-gray-300 ">
+        <div class="grid grid-cols-3 ">
+            <div class="col-span-1 h-14 pt-3 pl-4">
+                <span class="font-mono text-base text-gray-600">{{$tasksPending}} tarefas pendentes</span>
+            </div>
+            <div class="col-span-2 h-14">
+                @if($todo->hasPages())
+                    <div class="flex h-14 p-2">
 
-@if($todo->hasPages())
-    <div class="flex items-center justify-center h-14 mt-3 p-2">
-        <nav role="navigation" aria-label="Pagination Navigation" class="flex justify-between">
-            {{-- Previous Page Link --}}
-            @if ($todo->onFirstPage())
-                <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 rounded-md">
-                    {!! __('pagination.previous') !!}
-                </span>
-            @else
-                <button type="button" wire:click="previousPage" rel="prev" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 leading-5 rounded-md hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
-                    {!! __('pagination.previous') !!}
-                </button>
-            @endif
-    
-            {{-- Next Page Link --}}
-            @if ($todo->hasMorePages())
-                <button type="button" wire:click="nextPage" rel="next" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 leading-5 rounded-md hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
-                    {!! __('pagination.next') !!}
-                </button>
-            @else
-                <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 rounded-md">
-                    {!! __('pagination.next') !!}
-                </span>
-            @endif
-        </nav>
+                        <nav role="navigation" aria-label="Pagination Navigation" class="flex justify-between">
+                            {{-- Previous Page Link --}}
+                            @if ($todo->onFirstPage())
+                                <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 rounded-md">
+                                    {!! __('pagination.previous') !!}
+                                </span>
+                            @else
+                                <button type="button" wire:click="previousPage" rel="prev" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 leading-5 rounded-md hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                                    {!! __('pagination.previous') !!}
+                                </button>
+                            @endif
+                    
+                            {{-- Next Page Link --}}
+                            @if ($todo->hasMorePages())
+                                <button type="button" wire:click="nextPage" rel="next" class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 leading-5 rounded-md hover:text-gray-500 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:bg-gray-100 active:text-gray-700 transition ease-in-out duration-150">
+                                    {!! __('pagination.next') !!}
+                                </button>
+                            @else
+                                <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 cursor-default leading-5 rounded-md">
+                                    {!! __('pagination.next') !!}
+                                </span>
+                            @endif
+                        </nav>
+                    </div>
+                @endif
+
+            </div>
+        </div>
     </div>
-@endif
+</div>
+
 
 @push('scripts')
     <script>
