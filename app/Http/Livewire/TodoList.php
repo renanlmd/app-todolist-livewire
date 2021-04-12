@@ -76,8 +76,10 @@ class TodoList extends Component
 
     }
 
-    public function updateStatusTask(Todo $todo)
+    public function updateStatusTask($idTodo)
     {
+        
+        $todo = Todo::findOrFail($idTodo);
         if ($todo->status == Todo::PENDING){
             $todo->update([
                 'status' => Todo::COMPLETED

@@ -33,8 +33,9 @@
                 <div class="col-span-1 h-14">
                     <div class="flex items-center mt-2 ml-1">
                         
-                        <input type="checkbox" id="A3-yes" name="A3-confirmation" value="yes" class="opacity-0 absolute h-8 w-8" wire:click="updateStatusTask({{ $todoList->id }})" />
-                            <div class="bg-white border-2 rounded-full @if($todoList->isCompleted()) border-blue-600 @else border-blue-400 @endif w-10 h-10 flex flex-shrink-0 justify-center items-center mr-2">
+                            <div class="bg-white border rounded-full @if($todoList->isCompleted()) border-blue-600 @else border-blue-400 @endif w-10 h-10 flex flex-shrink-0 justify-center items-center mr-2"
+                            wire:click="updateStatusTask({{ $todoList->id }})"
+                            >
                                 <svg class="fill-current @if(!$todoList->isCompleted()) hidden @endif  w-6 h-6 pointer-events-none" version="1.1" viewBox="0 0 17 12" xmlns="http://www.w3.org/2000/svg">
                                 <g fill="none" fill-rule="evenodd">
                                     <g transform="translate(-9 -11)" fill=" @if($todoList->isCompleted()) #1F73F1 @endif" fill-rule="nonzero">
@@ -82,6 +83,7 @@
         >
             <span>Todos</span>
         </div>
+        
         <div 
         class="pl-3 font-mono @if($filter == 'pending') font-bold @endif text-lg text-gray-700 cursor-pointer hover:underline"
         wire:click="setFilter('pending')"
