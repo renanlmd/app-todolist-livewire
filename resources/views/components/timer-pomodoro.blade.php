@@ -11,20 +11,30 @@
             <span class="text-9xl text-white" id="timer"><span id="time-left"></span></span>
         </div>
     </div>
-    <div class="flex justify-center h-20 pt-1">
+    <div class="flex justify-center h-20 pt-1" id="play-reset">
 
         <div class="mr-7 ml-7">
             <div class="flex flex-wrap content-center h-16 ">
-                <span class="text-white text-5xl cursor-pointer" id="reset"><i class="fas fa-stop"></i></span>
+                <span class="text-white text-5xl cursor-pointer" id="btnReset"><i class="fas fa-stop"></i></span>
             </div>
         </div>
         <div class="mr-7">
             <div class="flex flex-wrap content-center h-16">
-                <span class="text-white text-5xl cursor-pointer" id="start_stop"><i class="fas fa-play"></i></span>
+                <span class="text-white text-5xl cursor-pointer" id="btnPlay"><i class="fas fa-play"></i></span>
             </div>
         </div>
                 
     </div>
+    <div class="flex justify-center h-20 pt-1 hidden" id="pause">
+
+        <div class="mr-7 ml-7">
+            <div class="flex flex-wrap content-center h-16 ">
+                <span class="text-white text-5xl cursor-pointer" id="btnPause"><i class="fas fa-pause"></i></span>
+            </div>
+        </div>
+                
+    </div>
+
 </div>
 <div class="absolute container bg-white hidden min-h-full w-3/6 top-0 right-0 transition duration-75" id="session-settings">
     <div class="flex flex-row-reverse p-1">
@@ -33,6 +43,55 @@
                 <i class="fas fa-times"></i>
             </span>
         </div>
+    </div>
+    <div class="flex flex-wrap content-center justify-center p-1 h-56">
+        <div class="grid grid-rows-3 h-full grid-flow-col gap-4">
+            <div class="row-span-3 w-20">
+                <div class="grid grid-rows-4 h-full grid-flow-col gap-4">
+                    <div class="text-center w-20 pt-3"><span class="font-mono text-sm">Pomodoro</span></div>
+                    <div class="w-20">
+                        <button class="w-20 h-full rounded-md text-lg bg-blue-600 text-white" id="pomodoro-increment"> + </button>
+                    </div>
+                    <div class="bg-gray-300" id="time-pomodoro">
+                        1
+                    </div>
+                    <div class="w-20 bg-green-400">
+                        <button class="w-20 h-full rounded-md text-lg bg-red-600 text-white" id="pomodoro-decrement"> - </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row-span-3 w-20">
+                <div class="grid grid-rows-4 h-full grid-flow-col gap-4">
+                    <div class="text-center w-20 pt-3">
+                        <span class="font-mono text-xs">Pausa curta</span>
+                    </div>
+                    <div class="w-20">
+                        <button class="w-20 h-full rounded-md text-lg bg-blue-600 text-white" id="breakFast-increment"> + </button>
+                    </div>
+                    <div class="bg-gray-300" id="time-breakFast-pomodoro">
+                        2
+                    </div>
+                    <div class="w-20 bg-green-400">
+                        <button class="w-20 h-full rounded-md text-lg bg-red-600 text-white" id="breakFast-decrement"> - </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row-span-3 w-20">
+                <div class="grid grid-rows-4 h-full grid-flow-col gap-4">
+                    <div class="text-center w-20 pt-3"><span class="font-mono text-xs">Pausa longa</span></div>
+                    <div class="w-20">
+                        <button class="w-20 h-full rounded-md text-lg bg-blue-600 text-white" id="longBreak-increment"> + </button>
+                    </div>
+                    <div class="bg-gray-300" id="time-longBreak-pomodoro">
+                        3
+                    </div>
+                    <div class="w-20 bg-green-400">
+                        <button class="w-20 h-full rounded-md text-lg bg-red-600 text-white" id="longBreak-decrement"> - </button>
+                    </div>
+                </div>
+            </div>
+            
+          </div>
     </div>
 </div>
 
@@ -52,88 +111,227 @@
     </script>
 
     <script>
-
+        
+        
         //get all needed DOM elements
-       
-        const start_stop = document.getElementById('start_stop');
-        const reset = document.getElementById('reset');
+        const sessionPomodoro = document.getElementById('time-pomodoro');
+        const sessionBreakFast = document.getElementById('time-breakFast-pomodoro');
+        const sessionLongBreak = document.getElementById('time-longBreak-pomodoro');
+        const incPomodoro = document.getElementById('pomodoro-increment');
+        const decPomodoro = document.getElementById('pomodoro-decrement');
+        const incBreak = document.getElementById('breakFast-increment');
+        const decBreak = document.getElementById('breakFast-decrement');
+        const incLongBreak = document.getElementById('longBreak-increment');
+        const decLongBreak = document.getElementById('longBreak-decrement');
+
+        const btnPlay = document.getElementById('btnPlay');
+        const btnPause = document.getElementById('btnPause');
+        const reset = document.getElementById('btnReset');
+        const play_reset = document.getElementById('play-reset');
+        const pause = document.getElementById('pause');
         const timeLeft = document.getElementById('time-left');
-        let setSession = document.getElementById('time-left');
+        
+        let click = new Audio('/audios/click.mp3');
+        let finishedSession = new Audio('/audios/bell.mp3');
+        let setPomodoro = parseInt(sessionPomodoro.innerHTML) * 60;
+        let setBreak = parseInt(sessionBreakFast.innerHTML) * 60;
+        let setLongBreak = parseInt(sessionLongBreak.innerHTML) * 60;
 
         
-        start_stop.addEventListener('click', startStop);
+        btnPlay.addEventListener('click', startTimer);
+        btnPause.addEventListener('click', pauseTimer);
         reset.addEventListener('click', resetTimer);
 
-        let sessionTimer = 25 * 60;  //convert to seconds
-        let breakTimer = 5 * 60;  //convert to seconds
-        
-        let timerSession = 25;
-        let timerBreak = 5;
-        setSession.innerHTML = timerSession + ":00";
+        incPomodoro.addEventListener('click', function(e){
+            let timePomodoro = parseInt(sessionPomodoro.innerHTML);
+            if(timePomodoro < 60){
+                timePomodoro += 1;
+                setPomodoro = timePomodoro * 60;
+            }
+            sessionPomodoro.innerHTML = timePomodoro;
+            timeLeft.innerHTML =  timePomodoro + ":00";
 
-        //makes sure there is leading zeroes when min or sec is less than 10 (i.e. 9 wrong, 09 correct)
-        Number.prototype.pad = function(size) {
-            var s = String(this);
-            while (s.length < (size || 2)) {s = "0" + s;}
-            return s;
+
+        });
+        decPomodoro.addEventListener('click', function(e){
+            let timePomodoro = parseInt(sessionPomodoro.innerHTML);
+            if(timePomodoro < 60){
+                timePomodoro -= 1;
+                setPomodoro = timePomodoro * 60;
+            }
+            sessionPomodoro.innerHTML = timePomodoro;
+            timeLeft.innerHTML =  timePomodoro + ":00";
+
+        });
+        incBreak.addEventListener('click', function(e){
+            let timeBreak = parseInt(sessionBreakFast.innerHTML);
+            if(timeBreak < 60){
+                timeBreak += 1;
+                setBreak = timeBreak * 60;
+            }
+            sessionBreakFast.innerHTML = timeBreak;
+        });
+        decBreak.addEventListener('click', function(e){
+            let timeBreak = parseInt(sessionBreakFast.innerHTML);
+            if(timeBreak < 60){
+                timeBreak -= 1;
+                setBreak = timeBreak * 60;
+            }
+            sessionBreakFast.innerHTML = timeBreak;
+        });
+        incLongBreak.addEventListener('click', function(e){
+            let timeLongBreak = parseInt(sessionLongBreak.innerHTML);
+            if(timeLongBreak < 60){
+                timeLongBreak += 1;
+                setLongBreak = timeLongBreak * 60;
+            }
+            sessionLongBreak.innerHTML = timeLongBreak;
+
+        });
+        decLongBreak.addEventListener('click', function(e){
+            let timeLongBreak = parseInt(sessionLongBreak.innerHTML);
+            if(timeLongBreak < 60){
+                timeLongBreak -= 1;
+                setLongBreak = timeLongBreak * 60;
+            }
+            sessionLongBreak.innerHTML = timeLongBreak;
+        });
+
+        function startTimer(e){
+            
+            play_reset.classList.add('hidden');
+            pause.classList.remove('hidden');
+            timer.startTimer();
+            click.play();
         }
 
-        let timerPaused = true;
-
-
-        function startStop(e){
-            e.preventDefault();
-            if(e.target.classList.contains('fa-play')){
-                e.target.classList.remove('fa-play');
-                e.target.classList.add("fa-pause");
-                timerPaused=false;
-                
-            }   
-            else{
-                // timerLabel.innerHTML = "Session Paused";
-                timerPaused = true;
-                e.target.classList.add("fa-play")
-            }
+        function pauseTimer(e){
+            
+            play_reset.classList.remove('hidden');
+            pause.classList.add('hidden');
+            timer.stopTimer()
         }
 
         function resetTimer(){
-            timerPaused =true;
-            // timerLabel.innerHTML = "Session Timer";
             
-            timeLeft.innerHTML = parseInt(25).pad() + ":00";
-            sessionTimer = parseInt(25) * 60;
-            breakTimer = parseInt(25) * 60;
+            timer.resetTime();
         }
 
-        const timer = setInterval(function(){ 
-            if(!timerPaused){
-                if(sessionTimer>0){
-                    // timerLabel.innerHTML = "Currently in Session";
-                    var m = Math.floor(sessionTimer / 60).pad();
-                    var s = (sessionTimer % 60).pad();
-                    timeLeft.innerHTML = m+ ":"+ s; 
-                    sessionTimer--;
-                }
-                else{
-                    if(sessionTimer > -2){
-                        sessionTimer--;
-                    }
-                    else if(breakTimer>0){
-                        // timerLabel.innerHTML = "Currently in Break";
-                        var m = Math.floor(breakTimer / 60).pad();
-                        var s = (breakTimer % 60).pad();
-                        timeLeft.innerHTML = m+ ":"+ s; 
-                        breakTimer--;
-                    }
-                    else if(breakTimer==0){
-                        sessionTimer = parseInt(sessionLength.innerHTML) * 60;
-                        breakTimer = parseInt(breakLength.innerHTML) * 60;
-                    }
-                }
-            }
-            
+        var timer = {
+            totalSeconds: null,
+            runningTime: null,
+            timeHandler: null,	
+            svgHandler: null,	
+            isWorkTime: true,	            
+            countSessions: null,
+            typeNotification: null,
 
-        }, 1000);
+            getTime: function(){
+                function formating(value){
+                    value = value.toString();
+                    if(value.length < 2){
+                        return '0' + value;
+                    } else {
+                        return value;
+                    }
+                }
+                var minutes = Math.floor(this.runningTime / 60);
+                var totalSeconds = this.runningTime - (minutes * 60);
+                return formating(minutes) + " : " + formating(totalSeconds);
+            },
+            resetTime: function(){
+                this.stopTimer();
+                this.isWorkTime = true;
+                this.countSessions = null;
+                this.setTimer();
+        
+            },
+            startTimer: function(){
+                var that = this; 
+                
+                this.timeHandler = setInterval(function(){
+
+                    if(that.runningTime > 0){
+                        that.runningTime--;
+                        
+                    } else{
+                        that.stopTimer();
+                        that.isWorkTime = !that.isWorkTime;	
+                        
+                        that.setTimer();
+                        finishedSession.play();
+                        play_reset.classList.remove('hidden');
+                        pause.classList.add('hidden');
+
+                        if(Notification.permission === "granted"){
+                            that.showNotification(that.typeNotification);
+                        }
+                        
+                    }
+                    
+                    timeLeft.innerHTML = that.getTime();
+
+                }, 50);
+            },
+            stopTimer: function(){
+                clearInterval(this.timeHandler);
+            },
+            setTimer: function(){
+                var timerId = null;
+                
+                if(this.isWorkTime){
+                    timerId = sessionPomodoro.innerHTML;                   
+                    this.typeNotification = 'word';
+                } else {
+                    this.countSessions += 1;
+                   
+                    if(this.countSessions >= 3){
+                        timerId = sessionLongBreak.innerHTML;
+                        this.countSessions = null;
+                        this.typeNotification = 'longbreak';                  
+                
+                    }else{
+                        timerId = sessionBreakFast.innerHTML;               
+                        this.typeNotification = 'breakfast';
+                    }
+                    
+                }
+
+                var seconds = parseInt(timerId) * 60;
+                this.totalSeconds = seconds;
+                this.runningTime = seconds;
+                timeLeft.innerHTML = this.getTime();
+
+            },
+
+            getIsWorkTime: function(){
+                return this.isWorkTime;
+
+            }, 
+
+            showNotification: function(typeNotification){
+                if (typeNotification == 'word') {
+                    const notification = new Notification("App Todo",{
+                        body: "Hora de produzir"
+                    });
+                } else if(typeNotification == 'breakfast'){
+                    const notification = new Notification("App Todo",{
+                        body: "Hora da parada rápida"
+                    });
+                }else{
+                    const notification = new Notification("App Todo",{
+                        body: "Hora da parada longa"
+                    });
+                }
+                
+            }
+        };
+
+        timer.setTimer();
+
+        if(Notification.permission !== 'denied'){
+            Notification.requestPermission();
+        }
 
     </script>
 
