@@ -1,4 +1,4 @@
-<div class="container min-h-full mx-auto bg-red-400">
+<div class="container min-h-full mx-auto" id="content-clock">
     <div class="flex flex-row-reverse p-1">
         <div class="w-10 h-9 text-center hover:rounded rounded-full transition duration-200 bg-opacity-25 hover:bg-gray-200 cursor-pointer" id="settings">
             <span class="text-2xl">
@@ -6,7 +6,7 @@
             </span>
         </div>
     </div>
-    <div class="flex flex-wrap content-center h-52 bg-gray-500">
+    <div class="flex flex-wrap content-center h-52">
         <div class="text-center w-full">
             <span class="text-9xl text-white" id="timer"><span id="time-left"></span></span>
         </div>
@@ -52,10 +52,10 @@
                     <div class="w-20">
                         <button class="w-20 h-full rounded-md text-lg bg-blue-600 text-white" id="pomodoro-increment"> + </button>
                     </div>
-                    <div class="bg-gray-300" id="time-pomodoro">
-                        1
+                    <div class="text-center pt-2 font-mono text-xl" id="time-pomodoro">
+                        25
                     </div>
-                    <div class="w-20 bg-green-400">
+                    <div class="w-20">
                         <button class="w-20 h-full rounded-md text-lg bg-red-600 text-white" id="pomodoro-decrement"> - </button>
                     </div>
                 </div>
@@ -68,10 +68,10 @@
                     <div class="w-20">
                         <button class="w-20 h-full rounded-md text-lg bg-blue-600 text-white" id="breakFast-increment"> + </button>
                     </div>
-                    <div class="bg-gray-300" id="time-breakFast-pomodoro">
-                        2
+                    <div class="text-center pt-2 font-mono text-xl" id="time-breakFast-pomodoro">
+                        5
                     </div>
-                    <div class="w-20 bg-green-400">
+                    <div class="w-20">
                         <button class="w-20 h-full rounded-md text-lg bg-red-600 text-white" id="breakFast-decrement"> - </button>
                     </div>
                 </div>
@@ -82,16 +82,34 @@
                     <div class="w-20">
                         <button class="w-20 h-full rounded-md text-lg bg-blue-600 text-white" id="longBreak-increment"> + </button>
                     </div>
-                    <div class="bg-gray-300" id="time-longBreak-pomodoro">
-                        3
+                    <div class="text-center pt-2 font-mono text-xl" id="time-longBreak-pomodoro">
+                        15
                     </div>
-                    <div class="w-20 bg-green-400">
+                    <div class="w-20">
                         <button class="w-20 h-full rounded-md text-lg bg-red-600 text-white" id="longBreak-decrement"> - </button>
                     </div>
                 </div>
             </div>
             
-          </div>
+        </div>
+        <div class="grid grid-rows-1 grid-flow-col mt-3">
+            <div class="row-span-1 w-72 h-7 text-center font-mono">
+                <span class="">Pomodoros até a pausa longa: </span>
+            </div>
+        </div>
+        <div class="grid grid-rows-1 grid-flow-col">
+            <div class="row-span-1 w-72 h-7 text-center font-mono">
+                <select class="w-full border border-gray-300 bg-white rounded outline-none hover:border-gray-700" id="configNumberPomodoro">
+                    <option class="py-1" value="5">5 Pomodoros</option>
+                    <option class="py-1" value="6">6 Pomodoros</option>
+                    <option class="py-1" value="7">7 Pomodoros</option>
+                    <option class="py-1" value="8">8 Pomodoros</option>
+                    <option class="py-1" value="9">9 Pomodoros</option>
+                    <option class="py-1" value="10">10 Pomodoros</option>
+                    
+                </select>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -112,7 +130,6 @@
 
     <script>
         
-        
         //get all needed DOM elements
         const sessionPomodoro = document.getElementById('time-pomodoro');
         const sessionBreakFast = document.getElementById('time-breakFast-pomodoro');
@@ -123,6 +140,8 @@
         const decBreak = document.getElementById('breakFast-decrement');
         const incLongBreak = document.getElementById('longBreak-increment');
         const decLongBreak = document.getElementById('longBreak-decrement');
+        const getNumberPomodoros = document.getElementById('configNumberPomodoro');
+        // timer.configNumberPomodoros = parseInt(getNumberPomodoros.options[getNumberPomodoros.selectedIndex].value);
 
         const btnPlay = document.getElementById('btnPlay');
         const btnPause = document.getElementById('btnPause');
@@ -133,10 +152,6 @@
         
         let click = new Audio('/audios/click.mp3');
         let finishedSession = new Audio('/audios/bell.mp3');
-        let setPomodoro = parseInt(sessionPomodoro.innerHTML) * 60;
-        let setBreak = parseInt(sessionBreakFast.innerHTML) * 60;
-        let setLongBreak = parseInt(sessionLongBreak.innerHTML) * 60;
-
         
         btnPlay.addEventListener('click', startTimer);
         btnPause.addEventListener('click', pauseTimer);
@@ -144,57 +159,46 @@
 
         incPomodoro.addEventListener('click', function(e){
             let timePomodoro = parseInt(sessionPomodoro.innerHTML);
-            if(timePomodoro < 60){
-                timePomodoro += 1;
-                setPomodoro = timePomodoro * 60;
-            }
+            timePomodoro += 1;
+            timer.runningTime = timePomodoro * 60;
             sessionPomodoro.innerHTML = timePomodoro;
-            timeLeft.innerHTML =  timePomodoro + ":00";
-
+            timeLeft.innerHTML = timer.getTime();
 
         });
         decPomodoro.addEventListener('click', function(e){
             let timePomodoro = parseInt(sessionPomodoro.innerHTML);
-            if(timePomodoro < 60){
-                timePomodoro -= 1;
-                setPomodoro = timePomodoro * 60;
-            }
+            timePomodoro -= 1;
+            timer.runningTime = timePomodoro * 60;
             sessionPomodoro.innerHTML = timePomodoro;
-            timeLeft.innerHTML =  timePomodoro + ":00";
+            timeLeft.innerHTML = timer.getTime();
 
         });
         incBreak.addEventListener('click', function(e){
             let timeBreak = parseInt(sessionBreakFast.innerHTML);
-            if(timeBreak < 60){
-                timeBreak += 1;
-                setBreak = timeBreak * 60;
-            }
+            timeBreak += 1;
             sessionBreakFast.innerHTML = timeBreak;
         });
         decBreak.addEventListener('click', function(e){
             let timeBreak = parseInt(sessionBreakFast.innerHTML);
-            if(timeBreak < 60){
-                timeBreak -= 1;
-                setBreak = timeBreak * 60;
-            }
+            timeBreak -= 1;
             sessionBreakFast.innerHTML = timeBreak;
+
         });
         incLongBreak.addEventListener('click', function(e){
             let timeLongBreak = parseInt(sessionLongBreak.innerHTML);
-            if(timeLongBreak < 60){
-                timeLongBreak += 1;
-                setLongBreak = timeLongBreak * 60;
-            }
+            timeLongBreak += 1;  
             sessionLongBreak.innerHTML = timeLongBreak;
 
         });
         decLongBreak.addEventListener('click', function(e){
             let timeLongBreak = parseInt(sessionLongBreak.innerHTML);
-            if(timeLongBreak < 60){
-                timeLongBreak -= 1;
-                setLongBreak = timeLongBreak * 60;
-            }
+            timeLongBreak -= 1;
             sessionLongBreak.innerHTML = timeLongBreak;
+
+        });
+        getNumberPomodoros.addEventListener('change', function(e){
+            timer.configNumberPomodoros = parseInt(getNumberPomodoros.options[getNumberPomodoros.selectedIndex].value);
+            console.log(timer.configNumberPomodoros);
         });
 
         function startTimer(e){
@@ -221,10 +225,10 @@
             totalSeconds: null,
             runningTime: null,
             timeHandler: null,	
-            svgHandler: null,	
             isWorkTime: true,	            
             countSessions: null,
             typeNotification: null,
+            configNumberPomodoros: parseInt(getNumberPomodoros.options[getNumberPomodoros.selectedIndex].value),
 
             getTime: function(){
                 function formating(value){
@@ -271,7 +275,8 @@
                     
                     timeLeft.innerHTML = that.getTime();
 
-                }, 50);
+                }, 1000);
+
             },
             stopTimer: function(){
                 clearInterval(this.timeHandler);
@@ -281,20 +286,31 @@
                 
                 if(this.isWorkTime){
                     timerId = sessionPomodoro.innerHTML;                   
-                    this.typeNotification = 'word';
+                    this.typeNotification = 'work';
+                    document.getElementById('content-clock').classList.remove('bg-blue-400');
+                    document.getElementById('content-clock').classList.remove('bg-green-500');
+                    document.getElementById('content-clock').classList.add('bg-red-400');
+
                 } else {
                     this.countSessions += 1;
                    
-                    if(this.countSessions >= 3){
+                    if(this.countSessions >= this.configNumberPomodoros){
                         timerId = sessionLongBreak.innerHTML;
                         this.countSessions = null;
-                        this.typeNotification = 'longbreak';                  
-                
+                        this.typeNotification = 'longbreak'; 
+                        document.getElementById('content-clock').classList.remove('bg-green-500');
+                        document.getElementById('content-clock').classList.remove('bg-red-400');  
+                        document.getElementById('content-clock').classList.add('bg-blue-400');
+               
                     }else{
                         timerId = sessionBreakFast.innerHTML;               
                         this.typeNotification = 'breakfast';
+                        document.getElementById('content-clock').classList.remove('bg-red-400');  
+                        document.getElementById('content-clock').classList.remove('bg-blue-400');
+                        document.getElementById('content-clock').classList.add('bg-green-500');
+
                     }
-                    
+
                 }
 
                 var seconds = parseInt(timerId) * 60;
@@ -310,7 +326,7 @@
             }, 
 
             showNotification: function(typeNotification){
-                if (typeNotification == 'word') {
+                if (typeNotification == 'work') {
                     const notification = new Notification("App Todo",{
                         body: "Hora de produzir"
                     });
@@ -324,7 +340,8 @@
                     });
                 }
                 
-            }
+            },
+            
         };
 
         timer.setTimer();
