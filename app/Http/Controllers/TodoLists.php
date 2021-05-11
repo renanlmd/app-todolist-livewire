@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\TodoList;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class TodoLists extends Controller
 {
@@ -89,5 +93,21 @@ class TodoLists extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function debug(){
+
+        $todo = json_encode(Session::all());
+        $todo = collect(json_decode($todo));
+        // $todo = $this->paginate($todo);
+        dd($todo);
+
+    }
+    
+    public function paginate($items, $perPage = 1, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }

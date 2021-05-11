@@ -14,3 +14,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::resource('/', \App\Http\Controllers\TodoLists::class);
+Route::get('/debug', [App\Http\Controllers\TodoLists::class, 'debug']);
