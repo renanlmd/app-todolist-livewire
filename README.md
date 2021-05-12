@@ -22,7 +22,7 @@ Enter in container
 ```shell
 docker exec -it TodoList_app bash
 ```
-Run npm and snippets javascripts
+Run npm and snippets javascript
 ```shell
 npm install && npm run dev
 ```
@@ -30,3 +30,5 @@ Access in the browser
 ```shell
 localhost:8000
 ```
+--- 
+<p align="center">Developed by: <a href="https://github.com/renanlmd">Renan Almeida</a></p> 
