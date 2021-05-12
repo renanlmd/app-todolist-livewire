@@ -22,6 +22,9 @@
     </div>
     
     @livewireScripts
+    <script src="https://kit.fontawesome.com/d86845d251.js" crossorigin="anonymous"></script>
+
     @stack('scripts')
+    @stack('scripts-pomodoro')
 </body>
 </html>

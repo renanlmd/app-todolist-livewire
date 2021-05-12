@@ -3,26 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\TodoList;
 
 class TodoLists extends Controller
 {
-    public $todoList;
 
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function __construct(TodoList $todo)
-    {
-        $this->todoList = $todo;
-    }
     
     public function index()
     {
-        $todo = $this->todoList->all();
-        return view('todo.index', compact('todo'));
+        return view('todo.index');
     }
 
     /**
@@ -90,4 +83,5 @@ class TodoLists extends Controller
     {
         //
     }
+
 }
