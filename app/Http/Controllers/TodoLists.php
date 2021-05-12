@@ -3,30 +3,19 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\TodoList;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class TodoLists extends Controller
 {
-    public $todoList;
 
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function __construct(TodoList $todo)
-    {
-        $this->todoList = $todo;
-    }
     
     public function index()
     {
-        $todo = $this->todoList->all();
-        return view('todo.index', compact('todo'));
+        return view('todo.index');
     }
 
     /**
@@ -95,19 +84,4 @@ class TodoLists extends Controller
         //
     }
 
-    public function debug(){
-
-        $todo = json_encode(Session::all());
-        $todo = collect(json_decode($todo));
-        // $todo = $this->paginate($todo);
-        dd($todo);
-
-    }
-    
-    public function paginate($items, $perPage = 1, $page = null, $options = [])
-    {
-        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
-        $items = $items instanceof Collection ? $items : Collection::make($items);
-        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
-    }
 }

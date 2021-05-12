@@ -36,7 +36,7 @@
     </div>
 
 </div>
-<div class="absolute container bg-white hidden min-h-full w-3/6 top-0 right-0 transition duration-75" id="session-settings">
+<div class="absolute container bg-white hidden h-80 w-3/6 top-0 right-0 transition duration-75" id="session-settings">
     <div class="flex flex-row-reverse p-1">
         <div class="w-10 h-9 text-center hover:rounded rounded-full transition duration-200 bg-opacity-25 hover:bg-gray-200 cursor-pointer" id="hide-settings">
             <span class="text-2xl">

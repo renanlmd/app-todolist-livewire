@@ -3,19 +3,10 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use App\Models\TodoList as Todo;
-use Illuminate\Database\Eloquent\Collection;
-use Livewire\WithPagination;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
-
 
 class TodoList extends Component
 {
-    use WithPagination;
-
-    public $paginateConfig = 3;
    
     public $newTask;
     
@@ -27,27 +18,21 @@ class TodoList extends Component
     
     public $tasksPending;
 
-    public $todoList;
 
     public function render()
     {
        
         $todo = $this->getCollectioPerFilter();
-        $todo = $this->paginate($todo, $this->paginateConfig);
         if(Session::has('todoList')){
             
             $this->tasksPending =  $this->verifyStatus('pending')->count();
-
-            $todoToggle = collect($todo->items());
-        
-            $countCompleted = $this->verifyStatus('completed');
-            if ($countCompleted->count() == $todoToggle->count()) {
+            
+            $countCompleted = $this->verifyStatus('pending');
+            if ($countCompleted->count() == 0 or $this->filter == 'completed') {
                 $this->toggleAll = true;
             } else {
                 $this->toggleAll = false;
             }   
-
-            // dd($this->getCollectioPerFilter());
         
             $verifyStatusCompleted = $this->verifyStatus('completed');
             
@@ -57,13 +42,6 @@ class TodoList extends Component
                 $this->taskStatusCompleted = false;
             }
         }
-        
-
-       
-
-        
-        
-        
         
         return view('livewire.todo-list', ['todo'=> $todo]);
 
@@ -113,17 +91,9 @@ class TodoList extends Component
         }
     }
 
-    public function paginate($items, $perPage = null , $page = null, $options = [])
-    {
-        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
-        $items = $items instanceof Collection ? $items : Collection::make($items);
-        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
-    }
-
     public function setFilter($filter)
     {
         $this->filter = $filter;
-        $this->gotoPage(1);
     }
 
     public function mount() 
@@ -142,7 +112,7 @@ class TodoList extends Component
                 
                 $data = collect([
                     'name_task' => $newNameTask, 
-                    'status' => Todo::PENDING, 
+                    'status' => 'pending', 
                     'created_at' => now(), 
                     'updated_at' => now()
                 ]);
@@ -150,7 +120,7 @@ class TodoList extends Component
             }else{
                 $data = collect([
                     'name_task' => $newNameTask, 
-                    'status' => Todo::PENDING, 
+                    'status' => 'pending', 
                     'created_at' => now(), 
                     'updated_at' => now()
                 ]);
@@ -169,8 +139,6 @@ class TodoList extends Component
         $todo = Session::get('todoList');
         $task = $todo[$idTodo]->toArray();
         
-        
-        // $todo = Todo::findOrFail($idTodo);
         if ($task['status'] == 'pending'){
            
             session("todoList.".$idTodo)['status'] = 'completed';
@@ -189,10 +157,6 @@ class TodoList extends Component
         
         $this->updateAllStatus($statusRequired);
 
-        if($this->page != 1 && $this->filter != 'all'){
-            $this->gotoPage($this->page - 1);
-        }
-
     }
 
     public function updateAllStatus($statusRequired){
@@ -207,13 +171,9 @@ class TodoList extends Component
         }
     }
 
-    public function deleteTask($idTask, $countTodosPerPage): void
+    public function deleteTask($idTask): void
     {
         session()->forget("todoList.".$idTask);
-
-        if($countTodosPerPage == 1 && $this->page != 1){
-            $this->gotoPage($this->page - 1);
-        }
 
     }
 
