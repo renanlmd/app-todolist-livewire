@@ -1,7 +1,7 @@
 # App TodoList with Livewire
 
 This project was developed with the intention of learning livewire
-
+<img src="/public/screenshot.png"/>
 ### Prerequisites
 <!--ts-->
    * Docker and docker-compose
@@ -9,14 +9,13 @@ This project was developed with the intention of learning livewire
 <!--te-->
 
 ### Instalation
-Clone the project
+Choice your directory and clone the project
 ```shell
-cd "choice your directory"
 git clone https://github.com/renanlmd/app-todolist-livewire.git
 ```
 Build the project
 ```shell
-docker-compose up -d
+docker-compose up -d --build
 ```
 Enter in container
 ```shell
@@ -28,7 +27,7 @@ npm install && npm run dev
 ```
 Access in the browser
 ```shell
-localhost:8000
+http://localhost:8000
 ```
 --- 
 <p align="center">Developed by: <a href="https://github.com/renanlmd">Renan Almeida</a></p> 
