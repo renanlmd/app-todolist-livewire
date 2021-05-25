@@ -6,8 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>App Todo List</title>
     <link href="/css/app.css" rel="stylesheet">
-    <title>Document</title>
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     @livewireStyles
 
 </head>
